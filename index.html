@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>พิมพ์ป้ายถัง 80×100 mm - กึ่งกลางสมดุล</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    body { font-family: "Sarabun", Arial, sans-serif; margin:0; padding:20px; background:#f0f0f0; }
+    .container { max-width:500px; margin:auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+    input, button {
+      width:100%; padding:15px; margin:12px 0; font-size:20px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box;
+    }
+    button { background:#0066ff; color:white; border:none; font-size:22px; font-weight:bold; cursor:pointer; }
+    button:hover { background:#0052cc; }
+
+    /* พื้นที่พิมพ์จริง */
+    #printSection {
+      width: 80mm;
+      height: 100mm;
+      padding: 8mm 5mm;
+      box-sizing: border-box;
+      background: white;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* บรรทัดบน เล็กลงแต่ยังชัด */
+    .top-line {
+      font-weight: 800;
+      font-size: 28pt;           /* เล็กลงจากเดิม แต่ยังอ่านง่าย */
+      line-height: 1.2;
+      width: 100%;
+    }
+
+    /* QR Code ใหญ่เต็มที่ */
+    .qrcode {
+      margin: 10mm 0;
+    }
+
+    /* T1 ด้านล่าง ตัวใหญ่ชัด */
+    .footer {
+      font-weight: 900;
+      font-size: 44pt;
+      margin: 0;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printSection, #printSection * { visibility: visible; }
+      #printSection { position: absolute; left:0; top:0; display:flex !important; }
+      @page { size: 80mm 100mm; margin:0; }
+      html, body { width:80mm; height:100mm; margin:0; padding:0; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <h2>พิมพ์ป้ายถัง 80×100 mm</h2>
+  <input type="text" id="exp" placeholder="EXP" value="">
+  <input type="text" id="mwf" placeholder="MWF" value="">
+  <input type="text" id="qrText" placeholder="เลขที่ถัง" value="เลขที่ถัง">
+  <button onclick="createAndPrint()">Print</button>
+</div>
+
+<!-- พิมพ์จริง -->
+<div id="printSection">
+  <div class="top-line">
+    EXP: <span id="printEXP" style="font-weight:900; font-size:32pt;"></span>
+    <span style="margin-left:25px;"></span>
+    MWF: <span id="printMWF" style="font-weight:900; font-size:32pt;"></span>
+  </div>
+
+  <div class="qrcode">
+    <div id="qrcode"></div>
+  </div>
+
+  <div class="footer" id="printQrText">T1</div>
+</div>
+
+<script>
+function createAndPrint() {
+  const exp  = document.getElementById("exp").value.trim()  || "-";
+  const mwf  = document.getElementById("mwf").value.trim()  || "-";
+  const text = document.getElementById("qrText").value.trim() || "T1";
+
+  document.getElementById("printEXP").textContent = exp;
+  document.getElementById("printMWF").textContent = mwf;
+  document.getElementById("printQrText").textContent = text;
+
+  // สร้าง QR ใหม่ทุกครั้ง
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode(document.getElementById("qrcode"), {
+    text: text,
+    width: 260,
+    height: 260,
+    colorDark: "#000000",
+    colorLight: "#fff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  setTimeout(() => window.print(), 1000);
+}
+</script>
+
+</body>
+</html>
